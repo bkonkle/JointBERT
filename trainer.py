@@ -22,11 +22,23 @@ class Trainer(object):
 
         self.intent_label_lst = get_intent_labels(args)
         self.slot_label_lst = get_slot_labels(args)
+        
         # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
         self.pad_token_label_id = args.ignore_index
 
         self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
-        self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
+
+        label2id, id2label = dict(), dict()
+        for i, label in enumerate(self.intent_label_lst):
+            label2id[label] = str(i)
+            id2label[str(i)] = label
+
+        self.config = self.config_class.from_pretrained(args.model_name_or_path,
+                                                        finetuning_task=args.task,
+                                                        num_labels=len(self.intent_label_lst),
+                                                        id2label=id2label,
+                                                        label2id=label2id)
+        
         self.model = self.model_class.from_pretrained(args.model_name_or_path,
                                                       config=self.config,
                                                       args=args,

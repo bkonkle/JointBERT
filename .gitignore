@@ -108,6 +108,12 @@ venv.bak/
 .idea/
 snips_model/
 atis_model/
+adventure_model/
+dev.in
+dev.out
+
+# Don't commit the actual training data - too large and is frequently changing
+data/adventure/
 
 .DS_Store
 cached*
